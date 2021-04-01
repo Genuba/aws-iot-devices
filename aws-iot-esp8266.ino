@@ -14,8 +14,8 @@ extern "C" {
 
 #define DHTTYPE DHT11
 #define dht_dpin D4
-#define AWS_IOT_PUBLISH_TOPIC   "esp32/pub"
-#define AWS_IOT_SUBSCRIBE_TOPIC "esp32/sub"
+#define AWS_IOT_GET_TOPIC   "$aws/things/MyESP32/shadow/get"
+#define AWS_IOT_UPDATE_TOPIC "$aws/things/MyESP32/shadow/update"
 
 WiFiClientSecure net;
 void messageHandler(char* topic, byte* payload, unsigned int len);
@@ -53,7 +53,7 @@ void connectAWS() {
       client.connect(THINGNAME);
     }
     Serial.println(" connected");
-    client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC);
+    client.subscribe(AWS_IOT_UPDATE_TOPIC);
 }
 
 float temperature;
@@ -75,7 +75,7 @@ void publishMessage() {
       doc["Current humidity"] = humidity;
       char jsonBuffer[512];
       serializeJson(doc,jsonBuffer);
-      client.publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
+      client.publish(AWS_IOT_GET_TOPIC, jsonBuffer);
       Serial.print("Published: "); Serial.println(jsonBuffer);
      }
   }
@@ -88,6 +88,16 @@ void messageHandler(char* topic, byte* payload, unsigned int length) {
   StaticJsonDocument<200> doc;
   deserializeJson(doc, payload);
   const char* message = doc["message"];
+  const bool encender = doc["encender"];
+
+  if (encender){
+    Serial.println("encendido");
+    digitalWrite(D8, HIGH);
+  }else{
+    Serial.println("apagado");
+    digitalWrite(D8, LOW); 
+  }
+  
   Serial.println(message);
 }
 
@@ -118,6 +128,7 @@ void setup() {
   Serial.begin(115200); Serial.println();
   Serial.println("ESP8266 AWS IoT Example");
   wifiConnectMqtt();
+  pinMode(D8, OUTPUT);
 }
 
 void loop() {
