@@ -1,2 +1,2 @@
-# aws-iot-esp8266
-Example microcontroler esp8266 connect to aws iot core
+# aws-iot-devices
+Example microcontrolers connect to aws iot core
