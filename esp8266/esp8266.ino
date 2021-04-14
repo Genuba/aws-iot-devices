@@ -70,7 +70,7 @@ void publishMessage() {
       temperature = tempTemperature;
       humidity = tempHumidity;
     
-      doc["time"] = millis();
+      doc["timeStamp"] = millis();
       doc["temperature"] = temperature;
       doc["Current humidity"] = humidity;
       char jsonBuffer[512];
